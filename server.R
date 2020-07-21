@@ -2,32 +2,25 @@
 library(data.table)
 #For graphs
 library(ggplot2)
+library(ggthemes)
+library(plotly)
 
 #For dealing with the data
-#install.packages("forcats")
 library(forcats)
 library(tidyr)
 library(dplyr)
 
-#install.packages("ggthemes")
-library(ggthemes)
-library(plotly)
-
 #FONTS
 library(extrafont)
-#font_import()
-#loadfonts(device = "win")
 
-
+#For the app: 
 library(shiny)
 library(shinythemes)
-#install.packages('rsconnect')
 library(rsconnect)
-
-
 
 #############
 #IMPORTS: 
+
 path <- "./data/odes.csv"
 mydata <- fread(path, header=TRUE, sep = '^', stringsAsFactors = TRUE, encoding='UTF-8')
 #View(mydata)
@@ -40,6 +33,7 @@ mydata$Meter <- ordered(mydata$Meter, levels = c("alcaic strophe",
                                                  "first asclepiadean","second asclepiadean", "third asclepiadean",  "fourth asclepiadean",    "fifth asclepiadean",  
                                                  "ionic a minore", "sapphic strophe", "second sapphic strophe" ))
 
+#Manually declare the color coding: 
 colors <- c("alcaic strophe" = 'tomato',                                       
             "iambic strophe" = 'tan1',
             "iambic trimeter" = 'tan2', 
@@ -64,36 +58,52 @@ server <-  function(input, output) {
   
   mydata <- mydata
   
-  p<-ggplot(data=mydata, aes(x=Collection, y=Lines)) +
+  barfirst<-ggplot(data=mydata, aes(x=Collection, y=Lines)) +
     geom_bar(stat="identity", fill = 'slateblue3') +
     theme(axis.text.x = element_text(angle = 45)) +
     labs(title="Bar Chart of Total Lines Written in each Collection of Poetry, by Release Date", x ="Poetry Collection", y = "Number of Lines in each Collection")
   
   
-  q<-ggplot(data=mydata, aes(x=reorder(Collection, -Lines, sum), y=Lines)) +
+  barsecond<-ggplot(data=mydata, aes(x=reorder(Collection, -Lines, sum), y=Lines)) +
     geom_bar(stat="identity", fill = 'slateblue3') +
     theme(axis.text.x = element_text(angle = 45)) +
     labs(title="Bar Chart of Total Lines Written in each Collection of Poetry, arranged by Volume", y = "Number of Lines in each Collection")
   
   
   #By sum of lines
-  r<-ggplot(data=mydata, aes(x=reorder(Meter, -Lines, sum), y=Lines)) +
+  barthird<-ggplot(data=mydata, aes(x=reorder(Meter, -Lines, sum), y=Lines)) +
     geom_bar(stat="identity", fill = 'slateblue3') +
     theme(axis.text.x = element_text(angle = 45)) +
     labs(title="Bar Chart of Total Lines Written in each Meter", x ="Meter", y = "Number of Lines in each Meter")
   
   
   #By frequency per poem
-  s<-ggplot(data=mydata, aes(x=forcats::fct_infreq(Meter))) +
+  barfourth<-ggplot(data=mydata, aes(x=forcats::fct_infreq(Meter))) +
     geom_bar(stat="count", fill = 'slateblue3') + 
     theme(axis.text.x = element_text(angle = 45)) +
     labs(title="Bar Chart of Frequency of Meters Used in Poems", x ="Meter", y = "Number of Poems per Meter")
   
-  w <- ggplot(mydata, aes(y=Lines, x=Collection, fill=Meter)) + 
+
+  
+  
+  stackedbar <- ggplot(mydata, aes(y=Lines, x=Collection, fill=Meter)) + 
     geom_bar(position="stack", stat="identity") + 
     scale_fill_manual(values = colors) +
     theme(text=element_text(size=16,  family="Verdana")) +
     labs(title="Bar Chart of Total Lines Written in each Collection of Poetry, Color Coded by Meter", x='Poetry Collection')
   
+  
+  boxfirst <- ggplot(mydata, aes(x=Collection, y=Lines)) + 
+    geom_boxplot() +
+    theme(text=element_text(size=16,  family="Verdana")) +
+    labs(title="Box-and-Whiskers Plot of Total Lines Written in each Collection of Poetry", x='Poetry Collection')
+  
+  
+  boxsecond <- ggplot(mydata, aes(x=Collection, y=Lines, fill = Meter)) + 
+    geom_boxplot() +
+    theme(text=element_text(size=16,  family="Verdana")) +
+    scale_fill_manual(values = colors) +
+    labs(title="Box-and-Whiskers Plot of Total Lines Written in each Collection of Poetry, Color Coded by Meter", x='Poetry Collection')
+  
+  
 }
-
