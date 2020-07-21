@@ -2,54 +2,55 @@
 library(data.table)
 #For graphs
 library(ggplot2)
+library(ggthemes)
+library(plotly)
 
 #For dealing with the data
-#install.packages("forcats")
 library(forcats)
 library(tidyr)
 library(dplyr)
 
-#install.packages("ggthemes")
-library(ggthemes)
-library(plotly)
-
 #FONTS
 library(extrafont)
-#font_import()
-#loadfonts(device = "win")
 
-
+#For the app: 
 library(shiny)
 library(shinythemes)
-#install.packages('rsconnect')
 library(rsconnect)
-
 
 ui <- fluidPage(
   titlePanel("Bar Chart Analysis of Horace's Meters: Carpe Diem"),
   
   fluidRow(
-    column(width = 9,
+    column(width = 12,
            tabsetPanel(
-             tabPanel(title = 'Lines per Collection, by date', 
+             tabPanel(title = 'Lines by Collection, by date', 
                       
-                      ggplotly(p)
+                      ggplotly(barfirst)
              ),
-             tabPanel(title = 'Lines per Collections, by size', 
+             tabPanel(title = 'Lines by Collections, by size', 
                       
-                      ggplotly(q)
+                      ggplotly(barsecond)
              ),
-             tabPanel(title = 'Lines per Meter', 
+             tabPanel(title = 'Lines by Meter', 
                       
-                      ggplotly(r)
+                      ggplotly(barthird)
              ),
-             tabPanel(title = 'Poems per Meter', 
+             tabPanel(title = 'Poems by Meter', 
                       
-                      ggplotly(s)
+                      ggplotly(barfourth)
              ),
-             tabPanel(title = 'Lines per Meter per Collection', 
-                      ggplotly(w, height = 770)
+             tabPanel(title = 'Boxplot of Lengths by Collection', 
                       
+                      ggplotly(boxfirst, height = 783)
+             ),
+             tabPanel(title = 'Boxplot of Lengths by Collection, Meters Colored in', 
+                      
+                      ggplotly(boxsecond, height = 783)
+             ),
+             tabPanel(title = 'Lines by Meter by Collection', 
+                      
+                      ggplotly(stackedbar, height = 783)
              )
              
            )
